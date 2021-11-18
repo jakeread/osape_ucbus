@@ -22,7 +22,7 @@ no warranty is provided, and users accept all liability.
 #include <Arduino.h>
 #include "../../osape/osap/vertex.h"
 
-void vt_ucBusDrop_setup(void);
+void vt_ucBusDrop_setup(boolean useDipPick, uint8_t ID);
 void vt_ucBusDrop_loop();
 boolean vt_ucBusDrop_cts(uint8_t rxAddr);
 void vt_ucBusDrop_send(uint8_t* data, uint16_t len, uint8_t rxAddr);

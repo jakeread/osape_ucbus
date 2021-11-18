@@ -58,6 +58,8 @@ volatile uint16_t timeTick = 0;
 volatile uint64_t timeBlink = 0;
 uint16_t blinkTime = 1000;
 
+#ifdef UCBUS_IS_D51 
+// ------------------------------------ D51 SPECIFIC 
 // hardware init (file scoped)
 void setupBusDropUART(void){
   // set driver output LO to start: tri-state 
@@ -110,8 +112,6 @@ void setupBusDropUART(void){
   // ctrlb 
   while(UB_SER_USART.SYNCBUSY.bit.CTRLB);
   UB_SER_USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN | SERCOM_USART_CTRLB_CHSIZE(0);
-  // ctrlc for 32bit 
-  //UB_SER_USART.CTRLC.reg |= SERCOM_USART_CTRLC_DATA32B(3);
 	// enable interrupts 
 	NVIC_EnableIRQ(SERCOM1_2_IRQn); // rx interrupts 
   NVIC_EnableIRQ(SERCOM1_1_IRQn); // transmit complete interrupt 
@@ -128,7 +128,24 @@ void setupBusDropUART(void){
   //UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_TXC; // now watch transmit complete
 }
 
+// DRE handler 
+void SERCOM1_0_Handler(void){
+  ucBusDrop_dreISR();
+}
+
+// TXC handler 
+void SERCOM1_1_Handler(void){
+  ucBusDrop_txcISR();
+}
+
+void SERCOM1_2_Handler(void){
+	ucBusDrop_rxISR();
+}
+// ------------------------------------ END D51 SPECIFIC 
+#endif 
+
 void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
+  #ifdef UCBUS_IS_D51
   dip_setup();
   if(useDipPick){
     // set our id, 
@@ -136,6 +153,7 @@ void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
   } else {
     id = ID;
   }
+  #endif 
   if(id > 31){ id = 31; }   // max 31 drops, logical addresses 1 - 31
   if(id == 0){ id = 1; }    // 0 'tap' is the clk reset, bump up... maybe cause confusion: instead could flash err light 
   // setup input / etc buffers 
@@ -152,10 +170,6 @@ void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
 
 uint16_t ucBusDrop_getOwnID(void){
   return id;
-}
-
-void SERCOM1_2_Handler(void){
-	ucBusDrop_rxISR();
 }
 
 void ucBusDrop_rxISR(void){
@@ -310,8 +324,7 @@ void ucBusDrop_rxISR(void){
   DEBUG1PIN_OFF;
 } // end rx-isr 
 
-// DRE handler 
-void SERCOM1_0_Handler(void){
+void ucBusDrop_dreISR(void){
   UB_SER_USART.DATA.reg = outWord[outWordRp ++];
   if(outWordRp >= UB_DROP_BYTES_PER_WORD){
     UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE; // clear tx-empty int.
@@ -319,8 +332,7 @@ void SERCOM1_0_Handler(void){
   }  
 }
 
-// TXC handler 
-void SERCOM1_1_Handler(void){
+void ucBusDrop_txcISR(void){
   UB_SER_USART.INTFLAG.bit.TXC = 1;   // clear flag (so interrupt not called again)
   UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_TXC; // clear tx-complete int.
   UB_DRIVER_DISABLE;

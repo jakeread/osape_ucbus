@@ -28,6 +28,8 @@ uint16_t ucBusDrop_getOwnID(void);
 
 // isrs 
 void ucBusDrop_rxISR(void);
+void ucBusDrop_dreISR(void);
+void ucBusDrop_txcISR(void);
 
 // handlers (define in main.cpp, these are application interfaces)
 void ucBusDrop_onRxISR(void);

@@ -26,14 +26,14 @@ vertex_t* vt_ucBusDrop = &_vt_ucBusDrop;
 // badness, direct write in future 
 uint8_t _tempBuffer[1024];
 
-void vt_ucBusDrop_setup(void){
+void vt_ucBusDrop_setup(boolean useDipPick, uint8_t ID){
     _vt_ucBusDrop.type = VT_TYPE_VBUS;
     _vt_ucBusDrop.loop = &vt_ucBusDrop_loop;
     _vt_ucBusDrop.cts = &vt_ucBusDrop_cts;
     _vt_ucBusDrop.send = &vt_ucBusDrop_send;
     stackReset(&_vt_ucBusDrop);
     // start it: use DIP 
-    ucBusDrop_setup(true, 0);
+    ucBusDrop_setup(useDipPick, ID);
     _vt_ucBusDrop.ownRxAddr = ucBusDrop_getOwnID();
 }
 
