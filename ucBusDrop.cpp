@@ -58,6 +58,9 @@ volatile uint16_t timeTick = 0;
 volatile uint64_t timeBlink = 0;
 uint16_t blinkTime = 1000;
 
+// baudrate 
+uint32_t ub_baud_val = 0;
+
 #ifdef UCBUS_IS_D51 
 // ------------------------------------ D51 SPECIFIC 
 // hardware init (file scoped)
@@ -117,7 +120,7 @@ void setupBusDropUART(void){
   NVIC_EnableIRQ(SERCOM1_1_IRQn); // transmit complete interrupt 
 	NVIC_EnableIRQ(SERCOM1_0_IRQn); // data register empty interrupts 
 	// set baud 
-  UB_SER_USART.BAUD.reg = UB_BAUD_VAL;
+  UB_SER_USART.BAUD.reg = ub_baud_val;
   // and finally, a kickoff
   while(UB_SER_USART.SYNCBUSY.bit.ENABLE);
   UB_SER_USART.CTRLA.bit.ENABLE = 1;
@@ -188,7 +191,7 @@ void setupBusDropUART(void){
   // enable reciever, transmit,
   UB_SER_USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN;
   // set BAUD:
-  UB_SER_USART.BAUD.reg = SERCOM_USART_BAUD_BAUD(UB_BAUD_VAL);
+  UB_SER_USART.BAUD.reg = SERCOM_USART_BAUD_BAUD(ub_baud_val);
   // we will use interrupts,
   NVIC_EnableIRQ(SERCOM1_IRQn);
   // rx interrupt always
@@ -236,6 +239,26 @@ void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
     outBufferRp[ch] = 0;
     outBufferLen[ch] = 0;
     rcrxb[ch] = 0;
+  }
+  // pick baud, via top level config.h 
+  // baud bb baud
+  // 63019 for a very safe 115200
+  // 54351 for a go-karting 512000
+  // 43690 for a trotting pace of 1MHz
+  // 21845 for the E30 2MHz
+  // 0 for max-speed 3MHz
+  switch(UCBUS_BAUD){
+    case 1:
+      ub_baud_val = 43690;
+      break;
+    case 2: 
+      ub_baud_val = 21845;
+      break;
+    case 3: 
+      ub_baud_val = 0;
+      break;
+    default:
+      ub_baud_val = 43690;
   }
   // start the hardware 
   setupBusDropUART();

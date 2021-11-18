@@ -107,7 +107,7 @@ void setupBusHeadUART(void){
   NVIC_EnableIRQ(SERCOM1_1_IRQn); // transmit complete interrupt 
 	NVIC_EnableIRQ(SERCOM1_0_IRQn); // data register empty interrupts 
 	// set baud 
-  UB_SER_USART.BAUD.reg = UB_BAUD_VAL;
+  UB_SER_USART.BAUD.reg = ub_baud_val;
   // and finally, a kickoff
   while(UB_SER_USART.SYNCBUSY.bit.ENABLE);
   UB_SER_USART.CTRLA.bit.ENABLE = 1;
@@ -144,7 +144,7 @@ void ucBusHead_timerISR(void){
   #warning debug code: just for a few, 
   lastDropTap = currentDropTap;
   currentDropTap ++;
-  if(currentDropTap > 32){ //UB_MAX_DROPS){ // recall that tapping '0' should operate the clock reset, addr 0 doesn't exist 
+  if(currentDropTap > UB_MAX_DROPS){ // recall that tapping '0' should operate the clock reset, addr 0 doesn't exist 
     currentDropTap = 1;
   }
   // reset the outgoing header, 

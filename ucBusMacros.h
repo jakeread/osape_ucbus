@@ -28,19 +28,12 @@ is; no warranty is provided, and users accept all liability.
 */
 
 // ---------------------------------------------- BUFFER / DROP SIZES / RATES
-// baud bb baud
-// 63019 for a very safe 115200
-// 54351 for a go-karting 512000
-// 43690 for a trotting pace of 1MHz
-// 21845 for the E30 2MHz
-// 0 for max-speed 3MHz
-#define UB_BAUD_VAL 43690
 // the channel count: 2
 #define UB_CH_COUNT 2 
 // the size of each buffer: also the maximum segment size 
 #define UB_BUFSIZE 256
-// max. # of drops on the bus
-#define UB_MAX_DROPS 63
+// max. # of drops on the bus, just swapping from top level config.h 
+#define UB_MAX_DROPS UCBUS_MAX_DROPS
 // with a fixed 2-byte header, we can have some max # of data bytes, 
 // this is *probably* going to stay at 10, but might fluxuate a little 
 #define UB_DATA_BYTES_PER_WORD 10
