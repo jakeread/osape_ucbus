@@ -36,7 +36,7 @@ is; no warranty is provided, and users accept all liability.
 #define UB_MAX_DROPS UCBUS_MAX_DROPS
 // with a fixed 2-byte header, we can have some max # of data bytes, 
 // this is *probably* going to stay at 10, but might fluxuate a little 
-#define UB_DATA_BYTES_PER_WORD 10
+#define UB_DATA_BYTES_PER_WORD 12
 #define UB_HEAD_BYTES_PER_WORD (UB_DATA_BYTES_PER_WORD + 3)     // + 2 header, + 1 rare character
 #define UB_DROP_BYTES_PER_WORD (UB_DATA_BYTES_PER_WORD + 2)     // + 2 header
 

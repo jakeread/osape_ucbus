@@ -204,7 +204,6 @@ void setupBusDropUART(void){
 }
 
 void SERCOM1_Handler(void) {
-  DEBUG1PIN_ON; 
   if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_RXC) {
     ucBusDrop_rxISR();
   } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_TXC){
@@ -212,7 +211,6 @@ void SERCOM1_Handler(void) {
   } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE) {
     ucBusDrop_dreISR();
   } 
-  DEBUG1PIN_OFF;
 } // ------------------------------------------------------ END SERCOM ISR
 // ------------------------------------ END D21 SPECIFIC 
 #endif 
@@ -423,7 +421,7 @@ void ucBusDrop_dreISR(void){
   if(outWordRp >= UB_DROP_BYTES_PER_WORD){
     UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE; // clear tx-empty int.
     UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_TXC; // set tx-complete int.
-  }  
+  } 
 }
 
 void ucBusDrop_txcISR(void){
