@@ -52,6 +52,9 @@ volatile UCBUS_HEADER_Type inHeader = { .bytes = { 0, 0 } };
 uint8_t inWord[UB_DROP_BYTES_PER_WORD];
 uint8_t inWordWp = 0;
 
+// baudrate 
+uint32_t ub_baud_val = 0;
+
 // uart init (file scoped)
 void setupBusHeadUART(void){
   // driver output is always on at head, set HI to enable
@@ -134,6 +137,26 @@ void ucBusHead_setup(void){
       lastWordHadToken[ch][d] = false;
     }
   }
+  // pick baud, via top level config.h 
+  // baud bb baud
+  // 63019 for a very safe 115200
+  // 54351 for a go-karting 512000
+  // 43690 for a trotting pace of 1MHz
+  // 21845 for the E30 2MHz
+  // 0 for max-speed 3MHz
+  switch(UCBUS_BAUD){
+    case 1:
+      ub_baud_val = 43690;
+      break;
+    case 2: 
+      ub_baud_val = 21845;
+      break;
+    case 3: 
+      ub_baud_val = 0;
+      break;
+    default:
+      ub_baud_val = 43690;
+  }
   // start the uart, 
   setupBusHeadUART();
   // ! alert ! need to setup timer in main.cpp 
@@ -141,8 +164,6 @@ void ucBusHead_setup(void){
 
 void ucBusHead_timerISR(void){
   // increment / wrap time division for drops  
-  #warning debug code: just for a few, 
-  lastDropTap = currentDropTap;
   currentDropTap ++;
   if(currentDropTap > UB_MAX_DROPS){ // recall that tapping '0' should operate the clock reset, addr 0 doesn't exist 
     currentDropTap = 1;
@@ -214,6 +235,7 @@ void SERCOM1_1_Handler(void){
   UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_TXC;
   // this means the latest word transmit is done, next byte on the line should be 1st in 
   // upstream pckt 
+  lastDropTap = currentDropTap;
   inWordWp = 0;
 }
 
