@@ -144,6 +144,76 @@ void SERCOM1_2_Handler(void){
 // ------------------------------------ END D51 SPECIFIC 
 #endif 
 
+#ifdef UCBUS_IS_D21 
+// ------------------------------------ D21 SPECIFIC 
+void setupBusDropUART(void){
+  // ------------------------------------------ USART PIN CONFIG
+  // setup pins as output or inputs,
+  UB_PORT.DIRSET.reg = UB_TXBM;
+  UB_PORT.DIRCLR.reg = UB_RXBM;
+  // pincfg using wrconfig write, s/o
+  // https://community.atmel.com/forum/sam-d21-spi-interface-bare-code
+  PORT_WRCONFIG_Type wrconfig;  // make new write config object,
+  wrconfig.bit.WRPMUX = 1;      // it will write to pmux
+  wrconfig.bit.WRPINCFG = 1;    // it will write to pinconfig
+  wrconfig.bit.PMUX = MUX_PA16C_SERCOM1_PAD0;  // with this pmux setting
+                                                // (putting 16 on c, for ser1)
+  wrconfig.bit.PMUXEN = 1;                     // enabling pin muxing
+  wrconfig.bit.HWSEL = 1;  // writing to the upper half of the pins
+                            // and (below) writing these pins, masked and
+                            // shifted into the lower half
+  wrconfig.bit.PINMASK = (uint16_t)((UB_TXBM | UB_RXBM) >> 16);
+  UB_PORT.WRCONFIG.reg = wrconfig.reg;  // here's the one-shot write, using prep above
+  // ------------------------------------------ Transmit Driver / Recieve
+  // Driver Enable
+  UB_DE_SETUP;
+  UB_RE_SETUP;
+  // ------------------------------------------ SPI CONFIG
+  // now, lettuce unmask the peripheral SER1
+  PM->APBCMASK.reg |= PM_APBCMASK_SERCOM1;
+  // hook the peripheral up to our main CPU clock, which is running at 48mHz
+  // on the D21
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 |
+                      GCLK_CLKCTRL_ID_SERCOM1_CORE;
+  while (GCLK->STATUS.bit.SYNCBUSY);
+  // now we can setup the actual sercom, first do a reset for posterity and
+  // await complete
+  UB_SER_USART.CTRLA.bit.SWRST = 1;
+  while (UB_SER_USART.SYNCBUSY.bit.SWRST);
+  // pinout: TX on SERx-0, RX on SERx-2
+  UB_SER_USART.CTRLA.reg = SERCOM_USART_CTRLA_DORD |     // lsb first
+                            SERCOM_USART_CTRLA_MODE(1) |  // internal clock
+                            SERCOM_USART_CTRLA_TXPO(0) |  // tx on SERx-0
+                            SERCOM_USART_CTRLA_RXPO(UB_RXPO);  // rx on SERx-3
+  // enable reciever, transmit,
+  UB_SER_USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN;
+  // set BAUD:
+  UB_SER_USART.BAUD.reg = SERCOM_USART_BAUD_BAUD(UB_BAUD_VAL);
+  // we will use interrupts,
+  NVIC_EnableIRQ(SERCOM1_IRQn);
+  // rx interrupt always
+  UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
+  UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE | SERCOM_USART_INTENCLR_TXC;
+  // UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
+  // ok I think that's it?
+  UB_SER_USART.CTRLA.bit.ENABLE = 1;
+  while (UB_SER_USART.SYNCBUSY.bit.ENABLE);
+}
+
+void SERCOM1_Handler(void) {
+  DEBUG1PIN_ON; 
+  if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_RXC) {
+    ucBusDrop_rxISR();
+  } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_TXC){
+    ucBusDrop_txcISR();
+  } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE) {
+    ucBusDrop_dreISR();
+  } 
+  DEBUG1PIN_OFF;
+} // ------------------------------------------------------ END SERCOM ISR
+// ------------------------------------ END D21 SPECIFIC 
+#endif 
+
 void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
   #ifdef UCBUS_IS_D51
   dip_setup();
