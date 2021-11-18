@@ -224,6 +224,9 @@ void ucBusDrop_setup(boolean useDipPick, uint8_t ID) {
     id = ID;
   }
   #endif 
+  #ifdef UCBUS_IS_D21
+  id = ID;
+  #endif 
   if(id > 31){ id = 31; }   // max 31 drops, logical addresses 1 - 31
   if(id == 0){ id = 1; }    // 0 'tap' is the clk reset, bump up... maybe cause confusion: instead could flash err light 
   // setup input / etc buffers 
@@ -362,7 +365,6 @@ void ucBusDrop_rxISR(void){
     // but should be able to use a pointer-swapping approach later. here we check if the pck 
     // is actually for us, then if we can accept it (fc not violated) and then swap it in:
     if(recieveBuffer[rxCh][0] == id || recieveBuffer[rxCh][0] == 0){
-      DEBUG1PIN_ON;
       // we should accept this, can we?
       if(inBufferLen[rxCh] != 0){ // failed to clear before new arrival, FC has failed 
         recieveBufferWp[rxCh] = 0;
@@ -391,7 +393,6 @@ void ucBusDrop_rxISR(void){
   // synced system clock: fair warning though, we're firing this pretty late
   // esp. if we have also this time transmitted, read in a packet, etc... yikes 
   ucBusDrop_onRxISR();
-  DEBUG1PIN_OFF;
 } // end rx-isr 
 
 void ucBusDrop_dreISR(void){
@@ -403,7 +404,7 @@ void ucBusDrop_dreISR(void){
 }
 
 void ucBusDrop_txcISR(void){
-  UB_SER_USART.INTFLAG.bit.TXC = 1;   // clear flag (so interrupt not called again)
+  UB_SER_USART.INTFLAG.reg = SERCOM_USART_INTFLAG_TXC;   // clear flag (so interrupt not called again)
   UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_TXC; // clear tx-complete int.
   UB_DRIVER_DISABLE;
 }

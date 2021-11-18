@@ -45,7 +45,7 @@ is; no warranty is provided, and users accept all liability.
 // this is *probably* going to stay at 10, but might fluxuate a little 
 #define UB_DATA_BYTES_PER_WORD 10
 #define UB_HEAD_BYTES_PER_WORD (UB_DATA_BYTES_PER_WORD + 3)     // + 2 header, + 1 rare character
-#define UB_DROP_BYTES_PER_WORD (UB_DATA_BYTES_PER_WORD + 2)     // + 2 header, + 1 rare character 
+#define UB_DROP_BYTES_PER_WORD (UB_DATA_BYTES_PER_WORD + 2)     // + 2 header
 
 // ---------------------------------------------- DATA WORDS -> INFO 
 
