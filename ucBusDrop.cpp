@@ -16,11 +16,11 @@ is; no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_DROP
 
-#include "../../indicators.h"
-#include "../../syserror.h"
-#include "../peripheralNums.h"
+#include "../../../indicators.h"
+#include "../../../syserror.h"
+#include "../../peripheralNums.h"
 #include "ucBusDipConfig.h"
-#include "../osape/utils/cobs.h"
+#include "../../osape/utils/cobs.h"
 
 // recieve buffers
 uint8_t recieveBuffer[UB_CH_COUNT][UB_BUFSIZE];
