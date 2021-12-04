@@ -61,6 +61,16 @@ uint16_t blinkTime = 1000;
 // baudrate 
 uint32_t ub_baud_val = 0;
 
+// we need to track interrupt states as well as setting the flags in the micro, 
+// since the D21 fires only one ISR for all of the flags;
+volatile boolean txcISR = false;
+volatile boolean dreISR = false;
+
+#define DRE_ISR_ON UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_DRE; dreISR = true
+#define DRE_ISR_OFF UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE; dreISR = false 
+#define TXC_ISR_ON UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_TXC; txcISR = true 
+#define TXC_ISR_OFF UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_TXC; txcISR = false 
+
 #ifdef UCBUS_IS_D51 
 // ------------------------------------ D51 SPECIFIC 
 // hardware init (file scoped)
@@ -206,10 +216,12 @@ void setupBusDropUART(void){
 void SERCOM1_Handler(void) {
   if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_RXC) {
     ucBusDrop_rxISR();
-  } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_TXC){
-    ucBusDrop_txcISR();
-  } else if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE) {
+  } 
+  if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_DRE && dreISR) {
     ucBusDrop_dreISR();
+  } 
+  if (UB_SER_USART.INTFLAG.reg & SERCOM_USART_INTFLAG_TXC && txcISR){
+    ucBusDrop_txcISR();
   } 
 } // ------------------------------------------------------ END SERCOM ISR
 // ------------------------------------ END D21 SPECIFIC 
@@ -349,7 +361,7 @@ void ucBusDrop_rxISR(void){
     outWordRp = 1; // next is [1]
     UB_DRIVER_ENABLE;
     UB_SER_USART.DATA.reg = outWord[0];
-    UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_DRE;
+    DRE_ISR_ON;
   } // ---------------------------------------------------- END TX CASE 
 
   // ------------------------------------------------------ BEGIN RX TERMS 
@@ -419,14 +431,14 @@ void ucBusDrop_rxISR(void){
 void ucBusDrop_dreISR(void){
   UB_SER_USART.DATA.reg = outWord[outWordRp ++];
   if(outWordRp >= UB_DROP_BYTES_PER_WORD){
-    UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE; // clear tx-empty int.
-    UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_TXC; // set tx-complete int.
+    DRE_ISR_OFF; // clear tx-empty int.
+    TXC_ISR_ON;  // set tx-complete int.
   } 
 }
 
 void ucBusDrop_txcISR(void){
   UB_SER_USART.INTFLAG.reg = SERCOM_USART_INTFLAG_TXC;   // clear flag (so interrupt not called again)
-  UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_TXC; // clear tx-complete int.
+  TXC_ISR_OFF;
   UB_DRIVER_DISABLE;
 }
 
