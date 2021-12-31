@@ -33,6 +33,7 @@ uint8_t _tempBuffer[1024];
 
 void vt_ucBusHead_setup(void) {
   _vt_ucBusHead.type = VT_TYPE_VBUS;
+  _vt_ucBusHead.name = "ucBusHead";
   _vt_ucBusHead.loop = &vt_ucBusHead_loop;
   _vt_ucBusHead.cts = &vt_ucBusHead_cts;
   _vt_ucBusHead.send = &vt_ucBusHead_send;
