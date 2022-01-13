@@ -202,8 +202,9 @@ void setupBusDropUART(void){
   UB_SER_USART.CTRLB.reg = SERCOM_USART_CTRLB_RXEN | SERCOM_USART_CTRLB_TXEN;
   // set BAUD:
   UB_SER_USART.BAUD.reg = SERCOM_USART_BAUD_BAUD(ub_baud_val);
-  // we will use interrupts,
+  // we will use interrupts: not the highest priority (0), just under. 
   NVIC_EnableIRQ(SERCOM1_IRQn);
+  NVIC_SetPriority(SERCOM1_IRQn, 1);
   // rx interrupt always
   UB_SER_USART.INTENSET.reg = SERCOM_USART_INTENSET_RXC;
   UB_SER_USART.INTENCLR.reg = SERCOM_USART_INTENCLR_DRE | SERCOM_USART_INTENCLR_TXC;
