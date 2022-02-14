@@ -20,7 +20,7 @@ no warranty is provided, and users accept all liability.
 #ifdef UCBUS_IS_HEAD
 
 #include <Arduino.h>
-#include "../../osape/osap/vertex.h"
+#include "../../osape/core/vertex.h"
 
 void vt_ucBusHead_setup(void);
 void vt_ucBusHead_loop();

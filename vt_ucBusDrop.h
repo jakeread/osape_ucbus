@@ -20,7 +20,7 @@ no warranty is provided, and users accept all liability.
 #ifdef UCBUS_IS_DROP
 
 #include <Arduino.h>
-#include "../../osape/osap/vertex.h"
+#include "../../osape/core/vertex.h"
 
 void vt_ucBusDrop_setup(boolean useDipPick, uint8_t ID);
 void vt_ucBusDrop_loop();
