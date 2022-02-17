@@ -22,12 +22,10 @@ no warranty is provided, and users accept all liability.
 #include <Arduino.h>
 #include "../../osape/core/vertex.h"
 
-void vt_ucBusDrop_setup(boolean useDipPick, uint8_t ID);
-void vt_ucBusDrop_loop();
-boolean vt_ucBusDrop_cts(uint8_t rxAddr);
-void vt_ucBusDrop_send(uint8_t* data, uint16_t len, uint8_t rxAddr);
-
-extern vertex_t* vt_ucBusDrop;
+void vb_ucBusDrop_setup(vbus_t* vb, boolean useDipPick, uint8_t ID);
+void vb_ucBusDrop_loop(vertex_t* vt);
+boolean vb_ucBusDrop_cts(vbus_t* vb, uint8_t rxAddr);
+void vb_ucBusDrop_send(vbus_t* vb, uint8_t* data, uint16_t len, uint8_t rxAddr);
 
 #endif 
 #endif 
