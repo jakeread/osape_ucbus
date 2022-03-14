@@ -16,6 +16,9 @@ no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_DROP
 
+#ifdef OSAP_DEBUG 
+#include "./osap_debug.h"
+#endif 
 #include "ucBusDrop.h"
 
 // badness, direct write in future 
