@@ -8,7 +8,7 @@
 #ifndef UCBUS_DIP_CONFIG_H_
 #define UCBUS_DIP_CONFIG_H_
 
-#include "../../../config.h"
+#include "./ucbus_config.h"
 
 #ifdef UCBUS_IS_D51 
 #ifdef UCBUS_IS_DROP

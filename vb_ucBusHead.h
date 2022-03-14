@@ -15,7 +15,7 @@ no warranty is provided, and users accept all liability.
 #ifndef VPORT_UCBUS_HEAD_H_
 #define VPORT_UCBUS_HEAD_H_ 
 
-#include "../../../config.h"
+#include "./ucbus_config.h"
 
 #ifdef UCBUS_IS_HEAD
 

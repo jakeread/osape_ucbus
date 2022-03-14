@@ -16,7 +16,6 @@ no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_HEAD
 
-#include "../../../indicators.h"
 #include "../../../syserror.h"
 #include "ucBusHead.h"
 

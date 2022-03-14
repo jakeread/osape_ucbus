@@ -16,7 +16,7 @@ is; no warranty is provided, and users accept all liability.
 #ifndef UCBUS_MACROS_H_
 #define UCBUS_MACROS_H_
 
-#include "../../../config.h"
+#include "./ucbus_config.h"
 #include <Arduino.h>
 
 // ---------------------------------------------- INFO 

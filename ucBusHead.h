@@ -15,7 +15,7 @@ is; no warranty is provided, and users accept all liability.
 #ifndef UCBUS_HEAD_H_
 #define UCBUS_HEAD_H_
 
-#include "../../../config.h"
+#include "./ucbus_config.h"
 
 #ifdef UCBUS_IS_HEAD
 

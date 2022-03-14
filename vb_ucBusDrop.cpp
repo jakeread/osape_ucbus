@@ -16,20 +16,18 @@ no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_DROP
 
-#include "../../../indicators.h"
-#include "../../../syserror.h"
 #include "ucBusDrop.h"
 
 // badness, direct write in future 
 uint8_t _tempBuffer[1024];
 
-void vb_ucBusDrop_setup(vbus_t* vb, boolean useDipPick, uint8_t ID){
+void vb_ucBusDrop_setup(VBus* vb, boolean useDipPick, uint8_t ID){
     // start it: use DIP 
     ucBusDrop_setup(useDipPick, ID);
     vb->ownRxAddr = ucBusDrop_getOwnID();
 }
 
-void vb_ucBusDrop_loop(vertex_t* vt){
+void vb_ucBusDrop_loop(Vertex* vt){
   // will want to shift(?) from ucbus inbuffer to vertex origin stack 
   if(ucBusDrop_ctrB()){
     // find a slot, 
@@ -44,7 +42,7 @@ void vb_ucBusDrop_loop(vertex_t* vt){
   }
 }
 
-boolean vb_ucBusDrop_cts(vbus_t* vb, uint8_t rxAddr){
+boolean vb_ucBusDrop_cts(VBus* vb, uint8_t rxAddr){
   // immediately clear? & transmit only to head 
   if(rxAddr == 0 && ucBusDrop_ctsB()){
     return true;
@@ -53,14 +51,16 @@ boolean vb_ucBusDrop_cts(vbus_t* vb, uint8_t rxAddr){
   }
 }
 
-void vb_ucBusDrop_send(vbus_t* vb, uint8_t* data, uint16_t len, uint8_t rxAddr){
+void vb_ucBusDrop_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr){
   // can't tx not-to-the-head, will drop pck 
   if(rxAddr != 0) return;
   // if the bus is ready, drop it,
   if(ucBusDrop_ctsB()){
     ucBusDrop_transmitB(data, len);
   } else {
-    sysError("ubd tx while not clear"); // should be a check immediately beforehand ...  
+    #ifdef OSAP_DEBUG
+    ERROR(2, "ubd tx while not clear");
+    #endif 
   }
 }
 

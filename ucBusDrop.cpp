@@ -16,11 +16,11 @@ is; no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_DROP
 
-#include "../../../indicators.h"
-#include "../../../syserror.h"
-#include "../../peripheralNums.h"
+#ifdef OSAP_DEBUG 
+#include "./osap_debug.h"
+#endif 
 #include "ucBusDipConfig.h"
-#include "../../osape/utils/cobs.h"
+#include "./utils_samd51/peripheral_nums.h" 
 
 // recieve buffers
 uint8_t recieveBuffer[UB_CH_COUNT][UB_BUFSIZE];
@@ -311,7 +311,7 @@ void ucBusDrop_rxISR(void){
   timeTick ++;
   timeBlink ++;
   if(timeBlink >= blinkTime){
-    CLKLIGHT_TOGGLE; 
+    //CLKLIGHT_TOGGLE; 
     timeBlink = 0;
   }
   // extract the header, 
@@ -371,11 +371,18 @@ void ucBusDrop_rxISR(void){
   // and # bytes tx'd here 
   uint8_t numToken = inHeader.bits.TOKENS;
   // check for broken numToken count,
-  if(numToken > UB_DATA_BYTES_PER_WORD) { ERROR(1, "ucbus-drop outsize numToken rx"); return; }
+  if(numToken > UB_DATA_BYTES_PER_WORD) { 
+    #ifdef OSAP_DEBUG 
+    ERROR(1, "ucbus-drop outsize numToken rx"); 
+    #endif 
+    return; 
+  }
   // don't overfill recieve buffer: 
   if(recieveBufferWp[rxCh] + numToken > UB_BUFSIZE){
     recieveBufferWp[rxCh] = 0;
+    #ifdef OSAP_DEBUG 
     ERROR(1, "ucbus-drop rx overfull buffer");
+    #endif 
     return;
   }
   // so let's see, if we have any we write them in:
@@ -402,7 +409,9 @@ void ucBusDrop_rxISR(void){
       // we should accept this, can we?
       if(inBufferLen[rxCh] != 0){ // failed to clear before new arrival, FC has failed 
         recieveBufferWp[rxCh] = 0;
+        #ifdef OSAP_DEBUG 
         ERROR(0, "ucbus-drop rx fc fails");
+        #endif 
         return;
       } // end check-for-overwrite 
       // copy from rxbuffer to inbuffer, it's ours... now FC will go lo, head should not tx *to us*

@@ -12,20 +12,20 @@ Copyright is retained and must be preserved. The work is provided as is;
 no warranty is provided, and users accept all liability.
 */
 
-#ifndef VPORT_UCBUS_HEAD_H_
-#define VPORT_UCBUS_HEAD_H_
+#ifndef VBUS_UCBUS_HEAD_H_
+#define VBUS_UCBUS_HEAD_H_
 
-#include "../../../config.h"
+#include "./ucbus_config.h"
 
 #ifdef UCBUS_IS_DROP
 
 #include <Arduino.h>
-#include "../../osape/core/vertex.h"
+#include "../osape/core/vertex.h"
 
-void vb_ucBusDrop_setup(vbus_t* vb, boolean useDipPick, uint8_t ID);
-void vb_ucBusDrop_loop(vertex_t* vt);
-boolean vb_ucBusDrop_cts(vbus_t* vb, uint8_t rxAddr);
-void vb_ucBusDrop_send(vbus_t* vb, uint8_t* data, uint16_t len, uint8_t rxAddr);
+void vb_ucBusDrop_setup(VBus* vb, boolean useDipPick, uint8_t ID);
+void vb_ucBusDrop_loop(Vertex* vt);
+boolean vb_ucBusDrop_cts(VBus* vb, uint8_t rxAddr);
+void vb_ucBusDrop_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr);
 
 #endif 
 #endif 
