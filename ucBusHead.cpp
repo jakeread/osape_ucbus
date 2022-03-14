@@ -16,12 +16,10 @@ is; no warranty is provided, and users accept all liability.
 
 #ifdef UCBUS_IS_HEAD
 
-#include <Arduino.h>
-
-#include "../../../syserror.h"
-#include "../../peripheralNums.h"
-#include "../../d51ClockBoss.h"
-#include "../../osape/utils/cobs.h"
+#ifdef OSAP_DEBUG 
+#include "./osap_debug.h"
+#endif 
+#include "./utils_samd51/peripheral_nums.h"
 
 // input buffers / space 
 uint8_t inBuffer[UB_CH_COUNT][UB_MAX_DROPS][UB_BUFSIZE];   // per-drop incoming bytes: 0 will be empty always, no drop here
@@ -261,13 +259,25 @@ void ucBusHead_rxISR(void){
     // has anything?
     uint8_t numToken = inHeader.bits.TOKENS;
     // check for broken numToken count,
-    if(numToken > UB_DATA_BYTES_PER_WORD) { ERROR(1, "ucbus-head outsize numToken rx"); return; }
+    if(numToken > UB_DATA_BYTES_PER_WORD) { 
+      #ifdef OSAP_DEBUG
+      ERROR(1, "ucbus-head outsize numToken rx"); 
+      #endif 
+      return; 
+    }
     // if we are filling this buffer, but it's already occupied, fc has failed and we
-    if(inBufferLen[rxCh][rxDrop] != 0){ ERROR(0, "ucbus-head rx FC broken"); return; }
+    if(inBufferLen[rxCh][rxDrop] != 0){ 
+      #ifdef OSAP_DEBUG
+      ERROR(0, "ucbus-head rx FC broken"); 
+      #endif 
+      return; 
+    }
     // donot write past buffer size,
     if(inBufferWp[rxCh][rxDrop] + numToken > UB_BUFSIZE){
       inBufferWp[rxCh][rxDrop] = 0;
+      #ifdef OSAP_DEBUG
       ERROR(0, "ucbus-head rx packet too-long");
+      #endif 
       return;
     }
     // shift bytes into rx buffer 

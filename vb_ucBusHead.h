@@ -1,5 +1,5 @@
 /*
-osap/vt_ucBusHead.h
+osap/vb_ucBusHead.h
 
 virtual port, bus head, ucbus 
 
@@ -20,14 +20,12 @@ no warranty is provided, and users accept all liability.
 #ifdef UCBUS_IS_HEAD
 
 #include <Arduino.h>
-#include "../../osape/core/vertex.h"
+#include "../osape/core/vertex.h"
 
-void vt_ucBusHead_setup(void);
-void vt_ucBusHead_loop();
-boolean vt_ucBusHead_cts(uint8_t rxAddr);
-void vt_ucBusHead_send(uint8_t* data, uint16_t len, uint8_t rxAddr);
-
-extern vertex_t* vt_ucBusHead;
+void vb_ucBusHead_setup(void);
+void vb_ucBusHead_loop(Vertex* vt);
+boolean vb_ucBusHead_cts(VBus* vb, uint8_t rxAddr);
+void vb_ucBusHead_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr);
 
 #endif
 #endif 
