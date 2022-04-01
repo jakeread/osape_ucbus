@@ -21,6 +21,7 @@ is; no warranty is provided, and users accept all liability.
 #endif 
 #include "ucBusDipConfig.h"
 #include "./utils_samd51/peripheral_nums.h" 
+#include "../indicators.h"
 
 // recieve buffers
 uint8_t recieveBuffer[UB_CH_COUNT][UB_BUFSIZE];
@@ -311,7 +312,7 @@ void ucBusDrop_rxISR(void){
   timeTick ++;
   timeBlink ++;
   if(timeBlink >= blinkTime){
-    //CLKLIGHT_TOGGLE; 
+    CLKLIGHT_TOGGLE; 
     timeBlink = 0;
   }
   // extract the header, 
