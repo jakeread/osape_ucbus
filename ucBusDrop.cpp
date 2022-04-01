@@ -20,7 +20,6 @@ is; no warranty is provided, and users accept all liability.
 #include "./osap_debug.h"
 #endif 
 #include "ucBusDipConfig.h"
-#include "./utils_samd51/peripheral_nums.h" 
 #include "../indicators.h"
 
 // recieve buffers
