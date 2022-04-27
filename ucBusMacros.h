@@ -68,8 +68,8 @@ typedef union {
 #define UB_RXPIN 18  // x-2
 #define UB_RXBM (uint32_t)(1 << UB_RXPIN)
 #define UB_RXPO 2 // RX on SER-2
-#define UB_TXPERIPHERAL PERIPHERAL_C
-#define UB_RXPERIPHERAL PERIPHERAL_C
+#define UB_TXPERIPHERAL 2 // A: 0, B: 1, C: 2
+#define UB_RXPERIPHERAL 2
 
 // the data enable / reciever enable pins were modified between module circuit 
 // revisions: the board w/ an SMT JTAG header is "the OG" module, 
