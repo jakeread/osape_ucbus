@@ -15,6 +15,7 @@ no warranty is provided, and users accept all liability.
 #include "vb_ucBusHead.h"
 
 #ifdef UCBUS_IS_HEAD
+#ifdef UCBUS_ON_OSAP 
 
 #ifdef OSAP_DEBUG 
 #include "./osap_debug.h"
@@ -71,4 +72,5 @@ void vb_ucBusHead_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr) {
   }
 }
 
+#endif 
 #endif

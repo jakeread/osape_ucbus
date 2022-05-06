@@ -15,6 +15,7 @@ no warranty is provided, and users accept all liability.
 #include "vb_ucBusDrop.h"
 
 #ifdef UCBUS_IS_DROP
+#ifdef UCBUS_ON_OSAP 
 
 #ifdef OSAP_DEBUG 
 #include "./osap_debug.h"
@@ -67,4 +68,5 @@ void vb_ucBusDrop_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr){
   }
 }
 
+#endif 
 #endif 
