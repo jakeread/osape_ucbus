@@ -32,6 +32,8 @@ is; no warranty is provided, and users accept all liability.
 #define UB_CH_COUNT 2 
 // the size of each buffer: also the maximum segment size 
 #define UB_BUFSIZE 256
+// time-until-considered-dead, in ms  
+#define UB_KEEPALIVE_TIME 200 
 // max. # of drops on the bus, just swapping from top level config.h 
 #define UB_MAX_DROPS UCBUS_MAX_DROPS
 // with a fixed 2-byte header, we can have some max # of data bytes, 

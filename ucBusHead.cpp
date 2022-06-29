@@ -33,6 +33,9 @@ volatile uint16_t outBufferLen[UB_CH_COUNT];
 // flow control, per ch per drop 
 volatile uint8_t rcrxb[UB_CH_COUNT][UB_MAX_DROPS];     // if 0 donot tx on this ch / this drop 
 
+// last-rx'd-time, per drop presence-detect, 
+volatile uint32_t lastRxTime[UB_MAX_DROPS];
+
 // currently 'tapped' drop - we loop thru bus drops, 
 volatile uint8_t currentDropTap = 1; // drop we are currently 'txing' to / drop that will reply on this cycle
 volatile uint8_t lastDropTap = 1; 
@@ -121,18 +124,18 @@ void setupBusHeadUART(void){
 
 // startup, 
 void ucBusHead_setup(void){
-  // clear buffers to begin,
-  for(uint8_t ch = 0; ch < UB_CH_COUNT; ch ++){
-    outBufferLen[ch] = 0;
-    outBufferRp[ch] = 0;
-    for(uint8_t d = 0; d < UB_MAX_DROPS; d ++){
+  // clear buffers to begin, also set lastRxTime to zero for each, 
+  for(uint8_t d = 0; d < UB_MAX_DROPS; d ++){
+    lastRxTime[d] = 0;
+    for(uint8_t ch = 0; ch < UB_CH_COUNT; ch ++){
+      outBufferLen[ch] = 0;
+      outBufferRp[ch] = 0;
       inBufferLen[ch][d] = 0; // zero all input buffers, write-in pointers
       inBufferWp[ch][d] = 0;
       rcrxb[ch][d] = 0;       // assume zero space to tx to all drops until they report otherwise 
       lastWordHadToken[ch][d] = false;
     }
-  }
-  // pick baud, via top level config.h 
+  }  // pick baud, via top level config.h 
   // baud bb baud
   // 63019 for a very safe 115200
   // 54351 for a go-karting 512000
@@ -249,6 +252,8 @@ void ucBusHead_rxISR(void){
     inHeader.bytes[0] = inWord[0];
     inHeader.bytes[1] = inWord[1];
     if(inHeader.bits.DROPTAP != rxDrop){ return; } // bail on mismatch, was a bad / misaligned word
+    // update keepalive: last we heard from this drop:
+    lastRxTime[rxDrop] = millis();
     // update our buffer states, 
     rcrxb[0][rxDrop] = inHeader.bits.CH0FC;
     rcrxb[1][rxDrop] = inHeader.bits.CH1FC; 
@@ -338,6 +343,11 @@ boolean ucBusHead_ctsB(uint8_t drop){
   } else {
     return false;
   }
+}
+
+boolean ucBusHead_isPresent(uint8_t drop){
+  if(drop > UCBUS_MAX_DROPS) return false;
+  return (millis() - lastRxTime[drop] < UB_KEEPALIVE_TIME);
 }
 
 #warning TODO: we have this awkward +1 in the buffer / segsize, vs what the app. sees... 
