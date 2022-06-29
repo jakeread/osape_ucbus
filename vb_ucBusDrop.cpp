@@ -17,9 +17,6 @@ no warranty is provided, and users accept all liability.
 #ifdef UCBUS_IS_DROP
 #ifdef UCBUS_ON_OSAP 
 
-#ifdef OSAP_DEBUG 
-#include "./osap_debug.h"
-#endif 
 #include "ucBusDrop.h"
 
 // badness, direct write in future 
@@ -62,9 +59,7 @@ void vb_ucBusDrop_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr){
   if(ucBusDrop_ctsB()){
     ucBusDrop_transmitB(data, len);
   } else {
-    #ifdef OSAP_DEBUG
-    ERROR(2, "ubd tx while not clear");
-    #endif 
+    OSAP::error(2, "ubd tx while not clear");
   }
 }
 

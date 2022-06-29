@@ -17,10 +17,8 @@ no warranty is provided, and users accept all liability.
 #ifdef UCBUS_IS_HEAD
 #ifdef UCBUS_ON_OSAP 
 
-#ifdef OSAP_DEBUG 
-#include "./osap_debug.h"
-#endif 
 #include "ucBusHead.h"
+#include "../osape/core/osap.h"
 
 // locally, track which drop we shifted in a packet from last
 uint8_t _lastDropHandled = 0;
@@ -64,9 +62,7 @@ boolean vb_ucBusHead_cts(VBus* vb, uint8_t rxAddr) {
 
 void vb_ucBusHead_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr) {
   if (rxAddr == 0) {
-    #ifdef OSAP_DEBUG 
-    ERROR(2, "attempt to busf from head to self");
-    #endif 
+    OSAP::error("attempt to busf from head to self", MEDIUM);
   } else {
     ucBusHead_transmitB(data, len, rxAddr);
   }
