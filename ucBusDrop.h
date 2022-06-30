@@ -41,7 +41,9 @@ size_t ucBusDrop_readB(uint8_t *dest);
 
 // drop cannot tx to channel A
 boolean ucBusDrop_ctsB(void); // true if tx buffer empty, 
+boolean ucBusDrop_isPresent(uint8_t rxAddr);
 void ucBusDrop_transmitB(uint8_t *data, uint16_t len);
+
 
 #endif
 #endif 

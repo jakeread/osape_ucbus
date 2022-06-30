@@ -78,8 +78,7 @@ boolean VBus_UCBusDrop::ctb(uint8_t broadcastChannel){
 }
 
 boolean VBus_UCBusDrop::isOpen(uint8_t rxAddr){
-  OSAP::debug("isOpen is unwritten");
-  return false;
+  return ucBusDrop_isPresent(rxAddr);
 }
 
 

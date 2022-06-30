@@ -47,6 +47,8 @@ volatile uint8_t outWordRp = 0;
 
 // reciprocal buffer space, for flowcontrol 
 volatile uint8_t rcrxb[UB_CH_COUNT];
+// last-time-rx'd 
+volatile uint32_t lastRxTime = 0;
 
 // our physical bus address, 
 volatile uint8_t id = 0;
@@ -284,6 +286,8 @@ void ucBusDrop_rxISR(void){
   inWord[inWordWp ++] = data;
   // tracking delineation 
   if(inWordWp >= UB_HEAD_BYTES_PER_WORD){
+    // track keepalive 
+    lastRxTime = millis();
     // always reset, never overwrite inWord[] tail
     inWordWp = 0;
     // is lastchar the rarechar ?
@@ -466,6 +470,12 @@ boolean ucBusDrop_ctsB(void){
   } else {
     return false;
   }
+}
+
+boolean ucBusHead_isPresent(uint8_t drop){
+  // can't tx anywhere other than to head, 
+  if(drop > 0) return false;
+  return (millis() - lastRxTime < UB_KEEPALIVE_TIME);
 }
 
 void ucBusDrop_transmitB(uint8_t *data, uint16_t len){
