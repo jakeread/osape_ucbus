@@ -24,7 +24,7 @@ no warranty is provided, and users accept all liability.
 uint8_t _lastDropHandled = 0;
 
 // badness, should remove w/ direct copy in API eventually
-uint8_t _tempBuffer[1024];
+uint8_t _tempBuffer[UB_BUFSIZE];
 
 VBus_UCBusHead::VBus_UCBusHead(Vertex* _parent, String _name
 ): VBus (_parent, _name) {
@@ -77,15 +77,16 @@ boolean VBus_UCBusHead::cts(uint8_t rxAddr){
 }
 
 void VBus_UCBusHead::broadcast(uint8_t* data, uint16_t len, uint8_t broadcastChannel){
-  OSAP::debug("UNWRITTEN");
+  OSAP::debug("Broadcast is unwritten");
 }
 
 boolean VBus_UCBusHead::ctb(uint8_t broadcastChannel){
-  OSAP::debug("UNWRITTEN");
+  OSAP::debug("CTB is unwritten");
   return false;
 }
 
 boolean VBus_UCBusHead::isOpen(uint8_t rxAddr){
+  OSAP::debug("isOpen is unwritten");
   return false;
 }
 

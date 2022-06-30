@@ -23,10 +23,18 @@ no warranty is provided, and users accept all liability.
 #include <Arduino.h>
 #include "../osape/core/vertex.h"
 
-void vb_ucBusDrop_setup(VBus* vb, boolean useDipPick, uint8_t ID);
-void vb_ucBusDrop_loop(Vertex* vt);
-boolean vb_ucBusDrop_cts(VBus* vb, uint8_t rxAddr);
-void vb_ucBusDrop_send(VBus* vb, uint8_t* data, uint16_t len, uint8_t rxAddr);
+class VBus_UCBusDrop : public VBus {
+  public:
+    void begin(void);
+    void begin(uint8_t _ownRxAddr);
+    void loop(void) override;
+    void send(uint8_t* data, uint16_t len, uint8_t rxAddr) override;
+    void broadcast(uint8_t* data, uint16_t len, uint8_t broadcastChannel) override;
+    boolean cts(uint8_t rxAddr) override;
+    boolean ctb(uint8_t broadcastChannel) override;
+    boolean isOpen(uint8_t rxAddr);
+    VBus_UCBusDrop(Vertex* _parent, String _name);
+};
 
 #endif 
 #endif 

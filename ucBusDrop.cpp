@@ -18,6 +18,7 @@ is; no warranty is provided, and users accept all liability.
 
 #include "ucBusDipConfig.h"
 #include "../indicators.h"
+#include "../osape/core/osap.h"
 
 // recieve buffers
 uint8_t recieveBuffer[UB_CH_COUNT][UB_BUFSIZE];
@@ -369,13 +370,13 @@ void ucBusDrop_rxISR(void){
   uint8_t numToken = inHeader.bits.TOKENS;
   // check for broken numToken count,
   if(numToken > UB_DATA_BYTES_PER_WORD) { 
-    OSAP::error(1, "ucbus-drop outsize numToken rx"); 
+    OSAP::error("ucbus-drop outsize numToken rx", MINOR); 
     return; 
   }
   // don't overfill recieve buffer: 
   if(recieveBufferWp[rxCh] + numToken > UB_BUFSIZE){
     recieveBufferWp[rxCh] = 0;
-    OSAP::error(1, "ucbus-drop rx overfull buffer");
+    OSAP::error("ucbus-drop rx overfull buffer", MINOR);
     return;
   }
   // so let's see, if we have any we write them in:
@@ -402,7 +403,7 @@ void ucBusDrop_rxISR(void){
       // we should accept this, can we?
       if(inBufferLen[rxCh] != 0){ // failed to clear before new arrival, FC has failed 
         recieveBufferWp[rxCh] = 0;
-        OSAP:error(0, "ucbus-drop rx fc fails");
+        OSAP::error("ucbus-drop rx fc fails", MINOR);
         return;
       } // end check-for-overwrite 
       // copy from rxbuffer to inbuffer, it's ours... now FC will go lo, head should not tx *to us*

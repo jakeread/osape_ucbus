@@ -36,7 +36,6 @@ class VBus_UCBusHead : public VBus {
     boolean cts(uint8_t rxAddr) override;
     boolean ctb(uint8_t broadcastChannel) override;
     boolean isOpen(uint8_t rxAddr) override;
-    //
     // -------------------------------- Constructors 
     VBus_UCBusHead(Vertex* _parent, String _name);
 };
