@@ -25,7 +25,7 @@ uint8_t _tempBuffer[UB_BUFSIZE];
 
 VBus_UCBusDrop::VBus_UCBusDrop(Vertex* _parent, String _name
 ): VBus(_parent, _name){
-
+  addrSpaceSize = UCBUS_MAX_DROPS;
 }
 
 void VBus_UCBusDrop::begin(void){

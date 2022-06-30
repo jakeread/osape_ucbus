@@ -472,7 +472,7 @@ boolean ucBusDrop_ctsB(void){
   }
 }
 
-boolean ucBusHead_isPresent(uint8_t drop){
+boolean ucBusDrop_isPresent(uint8_t drop){
   // can't tx anywhere other than to head, 
   if(drop > 0) return false;
   return (millis() - lastRxTime < UB_KEEPALIVE_TIME);
