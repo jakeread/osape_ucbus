@@ -351,11 +351,11 @@ boolean ucBusHead_isPresent(uint8_t drop){
 }
 
 #warning TODO: we have this awkward +1 in the buffer / segsize, vs what the app. sees... 
-void ucBusHead_transmitA(uint8_t *data, uint16_t len){
+void ucBusHead_transmitA(uint8_t *data, uint16_t len, uint8_t channel){
 	if(!ucBusHead_ctsA()) return;
   if(len > UB_BUFSIZE + 1) return; // none over buf size 
-  // 1st byte: broadcast identifier 
-  outBuffer[0][0] = 0;
+  // 1st byte: channel ID
+  outBuffer[0][0] = channel;
   // copy in @ 1th byte 
   // we *shouldn't* have to guard against the memcpy, god bless, since 
   // the bus shouldn't be touching this so long as our outBufferLen is 0,

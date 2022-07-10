@@ -78,12 +78,11 @@ boolean VBus_UCBusHead::cts(uint8_t rxAddr){
 }
 
 void VBus_UCBusHead::broadcast(uint8_t* data, uint16_t len, uint8_t broadcastChannel){
-  OSAP::debug("Broadcast is unwritten");
+  ucBusHead_transmitA(data, len, broadcastChannel);
 }
 
 boolean VBus_UCBusHead::ctb(uint8_t broadcastChannel){
-  OSAP::debug("CTB is unwritten");
-  return false;
+  return ucBusHead_ctsA();
 }
 
 boolean VBus_UCBusHead::isOpen(uint8_t rxAddr){

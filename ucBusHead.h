@@ -38,7 +38,7 @@ size_t ucBusHead_read(uint8_t drop, uint8_t *dest);  // get 'them bytes fam
 boolean ucBusHead_ctsA(void);  // return true if TX complete / buffer ready
 boolean ucBusHead_ctsB(uint8_t drop);
 boolean ucBusHead_isPresent(uint8_t drop); // have we heard from this drop recently ? 
-void ucBusHead_transmitA(uint8_t *data, uint16_t len);  // ship bytes: broadcast to all 
+void ucBusHead_transmitA(uint8_t *data, uint16_t len, uint8_t channel);  // ship bytes: broadcast to all 
 void ucBusHead_transmitB(uint8_t *data, uint16_t len, uint8_t drop);  // ship bytes: 0-14: individual drop, 15: broadcast
 
 #endif
