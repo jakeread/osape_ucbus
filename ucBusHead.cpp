@@ -177,8 +177,8 @@ void ucBusHead_timerISR(void){
   for(uint8_t ch = 0; ch < UB_CH_COUNT; ch ++){
     // do we have ahn pck to be tx'ing, and is flowcontrol condition met 
     // FC: outBuffer[x][0] is the 'addr' we are tx'ing to, so indexes relevant rcrxb as well
-    // ! and, when we broadcast (addr '0') we ignore FC rules, so: 
-    if(outBufferLen[ch] > 0 && (rcrxb[ch][outBuffer[ch][0]] | (outBuffer[ch][0] == 0))){
+    // ! and, when we broadcast (channel '0') we ignore FC rules, so: 
+    if(outBufferLen[ch] > 0 && (rcrxb[ch][outBuffer[ch][0]] || ch == 0)){
       // ch has incomplete-tx of some packet 
       // count them, max we will transmit is from word length: 
       uint8_t numTx = outBufferLen[ch] - outBufferRp[ch];
@@ -329,7 +329,7 @@ size_t ucBusHead_read(uint8_t drop, uint8_t *dest){
 
 boolean ucBusHead_ctsA(void){
 	if(outBufferLen[0] == 0){ 
-    // only condition is that our transmit buffer is zero, are not currently tx'ing on this channel 
+    // only condition is that our transmit buffer is zero / are not currently tx'ing on this channel 
 		return true;
 	} else {
 		return false;
