@@ -403,11 +403,11 @@ void ucBusDrop_rxISR(void){
     // unfortunately we have to do this literal-swap thing (some memcpy coming up here), 
     // but should be able to use a pointer-swapping approach later. here we check if the pck 
     // is actually for us, then if we can accept it (fc not violated) and then swap it in:
-    if(recieveBuffer[rxCh][0] == id || recieveBuffer[rxCh][0] == 0){
+    if(recieveBuffer[rxCh][0] == id || rxCh == 0){
       // we should accept this, can we?
       if(inBufferLen[rxCh] != 0){ // failed to clear before new arrival, FC has failed 
         recieveBufferWp[rxCh] = 0;
-        OSAP::error("ucbus-drop rx fc fails", MINOR);
+        OSAP::error("ucbus-drop rx FC fails on ch " + String(rxCh), MINOR);
         return;
       } // end check-for-overwrite 
       // copy from rxbuffer to inbuffer, it's ours... now FC will go lo, head should not tx *to us*
@@ -417,9 +417,9 @@ void ucBusDrop_rxISR(void){
       recieveBufferWp[rxCh] = 0;
       // if CH0, fire "RT" on-rx interrupt, this is where we should want RTOS in the future 
       if(rxCh == 0){
-        ucBusDrop_onPacketARx(&(inBuffer[0][1]), inBufferLen[0] - 1);
+        // ucBusDrop_onPacketARx(&(inBuffer[0][1]), inBufferLen[0] - 1);
         // assuming the interrupt is the exit for time being,
-        inBufferLen[0] = 0;
+        // inBufferLen[0] = 0;
       }
       //DEBUG1PIN_OFF;
     } else {
@@ -455,12 +455,26 @@ boolean ucBusDrop_ctrB(void){
   return (inBufferLen[1] > 0);
 }
 
+boolean ucBusDrop_ctrA(void){
+  // likewise
+  return (inBufferLen[0] > 0);
+}
+
 size_t ucBusDrop_readB(uint8_t *dest){
   if(!ucBusDrop_ctrB()) return 0;
   // to read-out, we rm the 0th byte which is addr information
   size_t len = inBufferLen[1] - 1;
   memcpy(dest, &(inBuffer[1][1]), len);
   inBufferLen[1] = 0; // now it's empty 
+  return len;
+}
+
+size_t ucBusDrop_readA(uint8_t* dest){
+  if(!ucBusDrop_ctrA()) return 0;
+  // we read out the whole gd thing,
+  size_t len = inBufferLen[0];
+  memcpy(dest, &(inBuffer[0]), len);
+  inBufferLen[0] = 0; // now empty 
   return len;
 }
 

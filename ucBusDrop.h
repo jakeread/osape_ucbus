@@ -37,7 +37,9 @@ void ucBusDrop_onPacketARx(uint8_t* inBufferA, volatile uint16_t len);
 
 // the api, eh 
 boolean ucBusDrop_ctrB(void);
-size_t ucBusDrop_readB(uint8_t *dest);
+size_t ucBusDrop_readB(uint8_t* dest);
+boolean ucBusDrop_ctrA(void);
+size_t ucBusDrop_readA(uint8_t* dest);
 
 // drop cannot tx to channel A
 boolean ucBusDrop_ctsB(void); // true if tx buffer empty, 

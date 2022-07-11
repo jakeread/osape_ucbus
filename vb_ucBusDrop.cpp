@@ -39,7 +39,17 @@ void VBus_UCBusDrop::begin(uint8_t _ownRxAddr){
 }
 
 void VBus_UCBusDrop::loop(void){
-  // will want to shift(?) from ucbus inbuffer to vertex origin stack 
+  // can we shift-in from channel a / broadcast messages ?
+  // also... stack 'em from the broadcast channel first, typically higher priority 
+  if(ucBusDrop_ctrA()){
+    // and if we have an empty space... 
+    if(stackEmptySlot(this, VT_STACK_ORIGIN)){
+    // get len & strip out the broadcastChannel, which was stuffed at [0]
+    uint16_t len = ucBusDrop_readA(_tempBuffer);
+    injestBroadcastPacket(&(_tempBuffer[1]), len - 1, _tempBuffer[0]);
+    }
+  }
+  // can we shift-in from channel b / directed messages ? 
   if(ucBusDrop_ctrB()){
     // find a slot, 
     if(stackEmptySlot(this, VT_STACK_ORIGIN)){
@@ -80,7 +90,6 @@ boolean VBus_UCBusDrop::ctb(uint8_t broadcastChannel){
 boolean VBus_UCBusDrop::isOpen(uint8_t rxAddr){
   return ucBusDrop_isPresent(rxAddr);
 }
-
 
 #endif 
 #endif 
