@@ -83,7 +83,7 @@ void VBus_UCBusDrop::broadcast(uint8_t* data, uint16_t len, uint8_t broadcastCha
 }
 
 boolean VBus_UCBusDrop::ctb(uint8_t broadcastChannel){
-  OSAP::debug("CTB is unwritten");
+  OSAP::debug("Bus Drop CTB is unwritten");
   return false;
 }
 
